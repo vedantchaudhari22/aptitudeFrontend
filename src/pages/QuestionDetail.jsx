@@ -11,7 +11,7 @@ const QuestionDetail = () => {
     const [q, setQ] = useState(null);
     const [selected, setSelected] = useState(null);
     const [submitted, setSubmitted] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(30);
+    const [timeLeft, setTimeLeft] = useState(45);
 
     // const BASE_URL = "http://localhost:5000";
     const BASE_URL = "https://aptitude-backend.vercel.app";
@@ -29,6 +29,8 @@ const QuestionDetail = () => {
     }, [id]);
 
     useEffect(() => {
+        if (!q) return; // Wait for question to be fully loaded
+
         if (timeLeft <= 0) {
             handleFinalSubmission(); // Handle logic when time runs out
             return;
@@ -40,7 +42,7 @@ const QuestionDetail = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft, submitted]);
+    }, [timeLeft, submitted, q]);
 
     // Function to handle the saving of progress
     const handleFinalSubmission = () => {
@@ -49,7 +51,7 @@ const QuestionDetail = () => {
         // Check if the answer is correct
         if (selected === q.correctAnswer) {
             const progress = JSON.parse(localStorage.getItem('zencode_progress') || "[]");
-            
+
             // Avoid duplicate entries for the same question
             if (!progress.find(p => p.questionId === q._id)) {
                 const newEntry = {
@@ -57,17 +59,17 @@ const QuestionDetail = () => {
                     questionId: q._id,
                     difficulty: q.difficulty, // From your model
                     topic: q.topic,
-                    solvedDate: new Date().toLocaleDateString('en-GB', { 
-                        day: '2-digit', month: 'short', year: 'numeric' 
+                    solvedDate: new Date().toLocaleDateString('en-GB', {
+                        day: '2-digit', month: 'short', year: 'numeric'
                     })
                 };
-                
+
                 const updatedProgress = [...progress, newEntry];
                 localStorage.setItem('zencode_progress', JSON.stringify(updatedProgress));
-                
+
                 // Real-time Trigger: Notify other components (like Sidebar or Dashboard)
                 window.dispatchEvent(new Event('storage'));
-                
+
                 toast.success("Progress Updated!");
             }
         } else {
@@ -89,16 +91,16 @@ const QuestionDetail = () => {
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-3 md:px-8 lg:px-12 overflow-hidden transition-colors duration-300">
             <div className="max-w-[1200px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                    
+
                     {/* LEFT SIDE: Question Area */}
                     <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-100 dark:border-slate-800">
-                        <button 
-                            onClick={() => navigate(-1)} 
+                        <button
+                            onClick={() => navigate(-1)}
                             className="text-blue-600 dark:text-blue-400 text-sm font-black mb-6 hover:translate-x-[-4px] transition-transform flex items-center gap-2 uppercase tracking-tighter"
                         >
                             <span>←</span> Back to Topics
                         </button>
-                        
+
                         <div className="mb-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="text-[10px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-lg border border-blue-100 dark:border-blue-800">
@@ -109,15 +111,14 @@ const QuestionDetail = () => {
                                         {q.company}
                                     </span>
                                 )}
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${
-                                    q.difficulty === 'Easy' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
-                                    q.difficulty === 'Hard' ? 'bg-red-50 text-red-600 border-red-100' : 
-                                    'bg-amber-50 text-amber-600 border-amber-100'
-                                }`}>
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${q.difficulty === 'Easy' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                    q.difficulty === 'Hard' ? 'bg-red-50 text-red-600 border-red-100' :
+                                        'bg-amber-50 text-amber-600 border-amber-100'
+                                    }`}>
                                     {q.difficulty}
                                 </span>
                             </div>
-                            
+
                             <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-snug">
                                 {q.questionText}
                             </h2>
@@ -125,9 +126,9 @@ const QuestionDetail = () => {
 
                         {q.imageUrl && (
                             <div className="mb-6 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
-                                <img 
-                                    src={`${BASE_URL}${q.imageUrl}`} 
-                                    alt="Logic Graph" 
+                                <img
+                                    src={`${BASE_URL}${q.imageUrl}`}
+                                    alt="Logic Graph"
                                     className="w-full h-auto object-contain max-h-[350px] mx-auto"
                                 />
                             </div>
@@ -135,7 +136,7 @@ const QuestionDetail = () => {
 
                         <div className="grid grid-cols-1 gap-3">
                             {q.options.map((opt, i) => (
-                                <OptionButton 
+                                <OptionButton
                                     key={i}
                                     option={opt}
                                     isSelected={selected === opt}
@@ -147,14 +148,13 @@ const QuestionDetail = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             disabled={!selected || submitted}
                             onClick={handleFinalSubmission}
-                            className={`mt-8 w-full py-4 rounded-2xl font-black text-lg transition-all shadow-xl ${
-                                !selected || submitted 
-                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed' 
-                                    : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-blue-500/20'
-                            }`}
+                            className={`mt-8 w-full py-4 rounded-2xl font-black text-lg transition-all shadow-xl ${!selected || submitted
+                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-blue-500/20'
+                                }`}
                         >
                             {submitted ? "Evaluation Done" : "Confirm Submission"}
                         </button>
@@ -177,7 +177,7 @@ const QuestionDetail = () => {
                                     </div>
                                     <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Step-by-Step Guide</h3>
                                 </div>
-                                
+
                                 <div className="mb-6 p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-800/50 text-center">
                                     <p className="text-[10px] text-green-600 font-black uppercase mb-1">Key Answer</p>
                                     <p className="text-xl font-black text-slate-900 dark:text-white">{q.correctAnswer}</p>
@@ -191,8 +191,13 @@ const QuestionDetail = () => {
                                     ))}
                                 </div>
 
-                                <button 
-                                    onClick={() => window.location.reload()}
+                                <button
+                                    onClick={() => {
+                                        setSelected(null);
+                                        setSubmitted(false);
+                                        setTimeLeft(45);
+                                        window.scrollTo(0, 0);
+                                    }}
                                     className="mt-6 w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-black hover:scale-[0.98] transition-all"
                                 >
                                     Re-attempt Problem
