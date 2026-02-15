@@ -9,6 +9,25 @@ const QuestionCard = ({ question, index }) => {
     Hard: "bg-slate-900 text-white border-slate-900"
   };
 
+  // Helper to generate consistent colors based on string
+  const getColorForString = (str) => {
+    const colors = [
+      "bg-blue-50 text-blue-700 border-blue-200",
+      "bg-purple-50 text-purple-700 border-purple-200",
+      "bg-pink-50 text-pink-700 border-pink-200",
+      "bg-orange-50 text-orange-700 border-orange-200",
+      "bg-emerald-50 text-emerald-700 border-emerald-200",
+      "bg-cyan-50 text-cyan-700 border-cyan-200",
+      "bg-indigo-50 text-indigo-700 border-indigo-200",
+      "bg-rose-50 text-rose-700 border-rose-200"
+    ];
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   return (
     <Link
       to={`/question/${question._id}`}
@@ -28,12 +47,12 @@ const QuestionCard = ({ question, index }) => {
           {/* Added flex-wrap to keep badges organized on smaller screens */}
           <div className="flex flex-wrap items-center gap-3 mt-3">
             {/* Category Badge */}
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-2 py-1 rounded">
+            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border ${getColorForString(question.category || 'default')}`}>
               {question.category}
             </span>
 
             {/* Topic Badge */}
-            <span className="text-slate-900 text-xs font-bold px-2 py-1 bg-slate-100 rounded border border-slate-200">
+            <span className={`text-xs font-bold px-2 py-1 rounded border ${getColorForString(question.topic || 'default')}`}>
               {question.topic}
             </span>
 
@@ -42,16 +61,9 @@ const QuestionCard = ({ question, index }) => {
               {question.difficulty}
             </span>
 
-            {/* NEW: Graph/Image Indicator - Only shows if imageUrl is present */}
-            {/* {question.imageUrl && (
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded flex items-center gap-1 border border-emerald-100 dark:border-emerald-800/50">
-                <span>📊</span> Graph
-              </span>
-            )} */}
-
             {/* NEW: Company Tag - Displays which company asked the question */}
             {question.company && (
-              <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-slate-50 rounded border border-slate-200">
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border ${getColorForString(question.company)}`}>
                 {question.company}
               </span>
             )}

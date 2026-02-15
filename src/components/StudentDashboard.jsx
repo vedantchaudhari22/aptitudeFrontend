@@ -46,16 +46,17 @@ const StudentDashboard = () => {
     };
 
     const filteredSolved = solvedData.filter(item =>
-        item.topic.toLowerCase().includes(searchTerm.toLowerCase())
+        item.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.questionText.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <div className="p-6 md:p-10 bg-slate-50 min-h-screen transition-colors duration-500">
-            <div className="max-w-7xl mx-auto space-y-10">
+        <div className="p-4 md:p-6 bg-slate-50 min-h-screen transition-colors duration-500">
+            <div className="max-w-7xl mx-auto space-y-6">
 
                 {/* --- HEADER SECTION --- */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-3 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-xl flex flex-col md:flex-row items-center justify-between gap-12">
+                    <div className="lg:col-span-3 bg-white p-6 rounded-[3rem] border border-slate-200 shadow-xl flex flex-col md:flex-row items-center justify-between gap-12">
                         <div className="flex items-center gap-10">
                             <div className="relative w-40 h-40 flex items-center justify-center">
                                 <svg className="w-full h-full -rotate-90">
@@ -118,7 +119,7 @@ const StudentDashboard = () => {
                             <input
                                 type="text"
                                 placeholder="Search solved topics..."
-                                className="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-2xl border border-slate-100 text-sm font-bold focus:ring-4 focus:ring-slate-200 outline-none transition-all"
+                                className="w-full pl-11 pr-4 py-4 bg-white rounded-2xl border border-slate-200 text-slate-900 text-sm font-bold focus:ring-4 focus:ring-slate-200 outline-none transition-all shadow-sm"
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
@@ -178,10 +179,10 @@ const StudentDashboard = () => {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan={4} className="py-32 text-center">
+                                        <td colSpan={4} className="py-0.6 text-center">
                                             <div className="flex flex-col items-center gap-4">
                                                 <BarChart3 size={64} className="text-slate-100 animate-pulse" />
-                                                <p className="text-slate-400 font-black uppercase tracking-[0.2em] text-xs">No entries found in your log</p>
+                                                <p className="text-slate-700 font-black uppercase tracking-[0.2em] text-xs">No entries found in your log</p>
                                             </div>
                                         </td>
                                     </tr>

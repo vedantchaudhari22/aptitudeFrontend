@@ -1,260 +1,246 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import {
-    ChevronLeft,
-    Save,
-    Image as ImageIcon,
-    Building2,
-    BookOpen,
-    Layers,
-    CheckCircle2,
-    BarChart3
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { ChevronLeft, UploadCloud } from "lucide-react";
 
 const AdminEdit = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [file, setFile] = useState(null);
-    const [formData, setFormData] = useState(null);
-    // const BASE_URL = "http://localhost:5000";
-    const BASE_URL = "https://aptitude-backend.vercel.app";
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    // Fetch existing question data on load
-    useEffect(() => {
-        const fetchQuestion = async () => {
-            try {
-                const res = await axios.get(`${BASE_URL}/api/questions/${id}`);
-                setFormData(res.data);
-            } catch (err) {
-                toast.error("Failed to load question data");
-                console.error(err);
-            }
-        };
-        fetchQuestion();
-    }, [id]);
+  const [file, setFile] = useState(null);
+  const [formData, setFormData] = useState(null);
 
-    const handleOptionChange = (index, value) => {
-        const newOptions = [...formData.options];
-        newOptions[index] = value;
-        setFormData({ ...formData, options: newOptions });
+  const BASE_URL = "https://aptitude-backend.vercel.app";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/questions/${id}`);
+        setFormData(res.data);
+      } catch {
+        toast.error("Failed to load question");
+      }
     };
+    fetchData();
+  }, [id]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const loadingToast = toast.loading("Updating ZenCode database...");
+  const handleOptionChange = (i, val) => {
+    const newOpts = [...formData.options];
+    newOpts[i] = val;
+    setFormData({ ...formData, options: newOpts });
+  };
 
-        const data = new FormData();
-        Object.keys(formData).forEach(key => {
-            if (key === 'options') {
-                data.append(key, JSON.stringify(formData[key]));
-            } else if (formData[key] !== null) {
-                data.append(key, formData[key]);
-            }
-        });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        if (file) data.append('graphImage', file);
+    const loading = toast.loading("Updating...");
 
-        try {
-            await axios.put(`${BASE_URL}/api/questions/${id}`, data);
-            toast.dismiss(loadingToast);
-            toast.success("Question updated successfully! 🚀", {
-                duration: 4000,
-                style: {
-                    borderRadius: '15px',
-                    background: '#1e293b',
-                    color: '#fff',
-                    border: '1px solid #334155'
-                },
-            });
-            setTimeout(() => navigate('/admin'), 1500);
-        } catch (err) {
-            toast.dismiss(loadingToast);
-            toast.error("Update failed. Please check the backend.");
+    try {
+      const data = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === "options") {
+          value.forEach((opt) => data.append("options", opt));
+        } else {
+          data.append(key, value);
         }
-    };
+      });
 
-    if (!formData) return (
-        <div className="h-screen flex items-center justify-center bg-slate-50">
-            <div className="animate-pulse font-black text-slate-900 tracking-tighter text-2xl uppercase">
-                Initializing ZenCode...
-            </div>
-        </div>
-    );
+      if (file) data.append("graphImage", file);
 
-    // Shared input class to handle Light/Dark mode text visibility
-    const inputClasses = "w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900 placeholder-slate-500";
+      await axios.put(`${BASE_URL}/api/questions/${id}`, data);
 
+      toast.dismiss(loading);
+      toast.success("Question Updated 🚀");
+
+      setTimeout(() => navigate("/admin"), 1200);
+    } catch {
+      toast.dismiss(loading);
+      toast.error("Update failed");
+    }
+  };
+
+  if (!formData)
     return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-12 transition-colors duration-300">
-            <div className="max-w-5xl mx-auto">
-
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-                    <div>
-                        <button
-                            onClick={() => navigate('/admin')}
-                            className="flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors font-bold text-sm mb-2"
-                        >
-                            <ChevronLeft size={18} /> Back to Dashboard
-                        </button>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            Edit <span className="text-slate-500">Question</span>
-                        </h1>
-                    </div>
-                    <button
-                        form="edit-form"
-                        type="submit"
-                        className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-slate-200 transition-all active:scale-95"
-                    >
-                        <Save size={20} /> Save Changes
-                    </button>
-                </div>
-
-                <form id="edit-form" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Question Text Card */}
-                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
-                                <BookOpen size={14} /> Question Statement
-                            </label>
-                            <textarea
-                                value={formData.questionText}
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-lg font-medium"
-                                rows={3}
-                                onChange={(e) => setFormData({ ...formData, questionText: e.target.value })}
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                                {formData.options.map((opt, i) => (
-                                    <div key={i} className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300 dark:text-slate-700">
-                                            {String.fromCharCode(65 + i)}
-                                        </span>
-                                        <input
-                                            type="text"
-                                            value={opt}
-                                            className="w-full pl-10 pr-4 py-4 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all font-bold"
-                                            onChange={(e) => handleOptionChange(i, e.target.value)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Solution Card */}
-                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
-                                Step-by-Step Solution
-                            </label>
-                            <textarea
-                                value={formData.solution}
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-sm leading-relaxed"
-                                rows={5}
-                                onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        {/* Metadata Details Sidebar */}
-                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <div className="space-y-5">
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Layers size={12} /> Topic
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.topic}
-                                        className={inputClasses}
-                                        onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Building2 size={12} /> Company
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.company || ""}
-                                        className={inputClasses}
-                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                    />
-                                </div>
-                                {/* NEW: Category Field */}
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <BarChart3 size={12} /> Category
-                                    </label>
-                                    <select
-                                        value={formData.category}
-                                        className={inputClasses}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
-                                        <option value="Quantitative">Quantitative</option>
-                                        <option value="Logical">Logical</option>
-                                        <option value="Verbal">Verbal</option>
-                                    </select>
-                                </div>
-                                {/* NEW: Difficulty Field */}
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Layers size={12} /> Difficulty
-                                    </label>
-                                    <select
-                                        value={formData.difficulty}
-                                        className={inputClasses}
-                                        onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                                    >
-                                        <option value="Easy">Easy</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Hard">Hard</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-900 mb-2">
-                                        <CheckCircle2 size={12} /> Correct Answer
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.correctAnswer}
-                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-black text-sm outline-none focus:border-slate-900"
-                                        onChange={(e) => setFormData({ ...formData, correctAnswer: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Image Update Card */}
-                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">
-                                <ImageIcon size={14} /> Update Visual
-                            </label>
-
-                            {formData.imageUrl && (
-                                <div className="mb-4 rounded-xl overflow-hidden border border-slate-100 aspect-video bg-slate-50 flex items-center justify-center">
-                                    <img
-                                        src={`${BASE_URL}${formData.imageUrl}`}
-                                        alt="Current graph"
-                                        className="max-h-full object-contain opacity-90"
-                                    />
-                                </div>
-                            )}
-
-                            <input
-                                type="file"
-                                className="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-black cursor-pointer"
-                                onChange={(e) => setFile(e.target.files[0])}
-                            />
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <div className="h-screen flex items-center justify-center bg-slate-50">
+        Loading...
+      </div>
     );
+
+  return (
+    <div className="min-h-screen bg-slate-100 p-3">
+      <div className="max-w-[1700px] mx-auto">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-3">
+          <button
+            onClick={() => navigate("/admin")}
+            className="flex items-center gap-2 text-slate-600 hover:text-black font-semibold"
+          >
+            <ChevronLeft size={18} /> Back
+          </button>
+
+          <button
+            form="edit-form"
+            type="submit"
+            className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-xl font-bold shadow"
+          >
+            <UploadCloud size={18} /> Save Changes
+          </button>
+        </div>
+
+        <form id="edit-form" onSubmit={handleSubmit} className="space-y-3">
+
+          {/* QUESTION */}
+          <div className="bg-white p-3 rounded-2xl shadow border">
+            <label className="text-xs font-bold text-slate-500">
+              Question
+            </label>
+
+            <input
+              type="text"
+              value={formData.questionText}
+              className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              onChange={(e) =>
+                setFormData({ ...formData, questionText: e.target.value })
+              }
+            />
+          </div>
+
+          {/* OPTIONS */}
+          <div className="bg-white p-3 rounded-2xl shadow border grid grid-cols-4 gap-2">
+            {formData.options.map((opt, i) => (
+              <input
+                key={i}
+                type="text"
+                value={opt}
+                className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+                onChange={(e) => handleOptionChange(i, e.target.value)}
+              />
+            ))}
+          </div>
+
+          {/* META */}
+          <div className="bg-white p-3 rounded-2xl shadow border grid grid-cols-5 gap-2">
+
+            <input
+              type="text"
+              value={formData.topic}
+              className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              onChange={(e) =>
+                setFormData({ ...formData, topic: e.target.value })
+              }
+            />
+
+            <input
+              type="text"
+              value={formData.company || ""}
+              className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              onChange={(e) =>
+                setFormData({ ...formData, company: e.target.value })
+              }
+            />
+
+            <select
+              value={formData.category}
+              className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
+            >
+              <option>Quantitative</option>
+              <option>Logical</option>
+              <option>Verbal</option>
+            </select>
+
+            <select
+              value={formData.difficulty}
+              className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              onChange={(e) =>
+                setFormData({ ...formData, difficulty: e.target.value })
+              }
+            >
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+
+            <input
+              type="text"
+              value={formData.correctAnswer}
+              className="p-2 rounded-xl border border-black/20 bg-slate-50 font-bold text-slate-900"
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  correctAnswer: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          {/* BOTTOM */}
+          <div className="grid grid-cols-2 gap-3">
+
+            {/* SOLUTION */}
+            <div className="bg-white p-3 rounded-2xl shadow border">
+              <label className="text-xs font-bold text-slate-500">
+                Solution
+              </label>
+
+              <textarea
+                rows={4}
+                value={formData.solution}
+                className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 text-slate-900"
+                onChange={(e) =>
+                  setFormData({ ...formData, solution: e.target.value })
+                }
+              />
+            </div>
+
+            {/* IMAGE */}
+            <div className="bg-white p-3 rounded-2xl shadow border border-black/10">
+              <label className="text-xs font-bold text-black">
+                Update Visual
+              </label>
+
+              <div className="mt-2 p-3 border border-black/20 rounded-xl bg-white text-center">
+                {file ? (
+                  <p className="text-sm font-semibold text-black truncate">
+                    Selected: {file.name}
+                  </p>
+                ) : formData.imageUrl ? (
+                  <img
+                    src={`${BASE_URL}${formData.imageUrl}`}
+                    alt="current"
+                    className="max-h-32 mx-auto"
+                  />
+                ) : (
+                  <p className="text-xs text-black/60">
+                    No file selected
+                  </p>
+                )}
+              </div>
+
+              <input
+                type="file"
+                className="mt-2 w-full text-sm text-black
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-lg file:border
+                file:border-black
+                file:text-sm file:font-semibold
+                file:bg-black file:text-white
+                hover:file:bg-white hover:file:text-black
+                hover:file:border-black"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default AdminEdit;

@@ -35,11 +35,11 @@ const Learn = () => {
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 p-6 md:p-10 transition-colors duration-500">
+        <div className="min-h-screen bg-slate-50 p-4 md:p-6 transition-colors duration-500">
             <div className="max-w-7xl mx-auto">
 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
                     <div>
                         <button
                             onClick={() => navigate('/')}
@@ -120,10 +120,10 @@ const Learn = () => {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={4} className="py-32 text-center">
+                                            <td colSpan={4} className="py-0.6 text-center">
                                                 <div className="flex flex-col items-center gap-4 opacity-40">
                                                     <BookOpen size={64} className="text-slate-300" />
-                                                    <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No matching lectures found</p>
+                                                    <p className="text-slate-900 font-black uppercase tracking-widest text-xs">No matching lectures found</p>
                                                 </div>
                                             </td>
                                         </tr>

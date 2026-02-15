@@ -1,33 +1,25 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import {
-    ChevronLeft,
-    UploadCloud,
-    Image as ImageIcon,
-    Building2,
-    BookOpen,
-    Layers,
-    CheckCircle2,
-    BarChart
-} from 'lucide-react';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { ChevronLeft, UploadCloud } from "lucide-react";
 
 const AdminUpload = () => {
     const navigate = useNavigate();
+
     const [file, setFile] = useState(null);
+
     const [formData, setFormData] = useState({
-        questionText: '',
-        topic: '',
-        category: 'Quantitative',
-        difficulty: 'Medium',
-        correctAnswer: '',
-        solution: '',
-        company: '',
-        options: ['', '', '', '']
+        questionText: "",
+        topic: "",
+        category: "Quantitative",
+        difficulty: "Medium",
+        correctAnswer: "",
+        solution: "",
+        company: "",
+        options: ["", "", "", ""],
     });
 
-    // const BASE_URL = "http://localhost:5000";
     const BASE_URL = "https://aptitude-backend.vercel.app";
 
     const handleOptionChange = (i, val) => {
@@ -39,284 +31,220 @@ const AdminUpload = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formData.options.some(opt => opt.trim() === '')) {
-            return toast.error("Please fill all four options");
+        if (formData.options.some((opt) => opt.trim() === "")) {
+            return toast.error("Fill all options");
         }
 
-        if (!formData.questionText.trim()) {
-            return toast.error("Please enter the question text");
-        }
-
-        if (!formData.topic.trim()) {
-            return toast.error("Please enter the topic");
-        }
-
-        if (!formData.correctAnswer.trim()) {
-            return toast.error("Please specify the correct answer");
-        }
-
-        // Validate that correctAnswer matches one of the options
         const answerExists = formData.options.some(
-            opt => opt.trim().toLowerCase() === formData.correctAnswer.trim().toLowerCase()
+            (opt) =>
+                opt.trim().toLowerCase() ===
+                formData.correctAnswer.trim().toLowerCase()
         );
+
         if (!answerExists) {
-            return toast.error("Correct answer must match one of the options exactly");
+            return toast.error("Correct answer must match one option");
         }
 
-        const loadingToast = toast.loading("Uploading to ZenCode database...");
+        const loading = toast.loading("Uploading...");
 
-        const submitQuestion = async (retryCount = 0) => {
-            try {
-                const data = new FormData();
+        try {
+            const data = new FormData();
 
-                // Append all fields from formData
-                data.append('questionText', formData.questionText);
-                data.append('topic', formData.topic);
-                data.append('category', formData.category);
-                data.append('difficulty', formData.difficulty);
-                data.append('correctAnswer', formData.correctAnswer);
-                data.append('solution', formData.solution);
-                data.append('company', formData.company || '');
-
-                // Append options as individual fields
-                formData.options.forEach((option) => {
-                    data.append(`options`, option);
-                });
-
-                // Append file if present
-                if (file) {
-                    data.append('graphImage', file);
-                }
-
-                const config = {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    timeout: 45000 // 45 second timeout
-                };
-
-                console.log(`[Attempt ${retryCount + 1}] Posting question to backend...`);
-                await axios.post(`${BASE_URL}/api/questions/add`, data, config);
-
-                toast.dismiss(loadingToast);
-                toast.success("Question Added Successfully! 🚀", {
-                    duration: 4000,
-                    style: {
-                        borderRadius: '15px',
-                        background: '#1e293b',
-                        color: '#fff',
-                        border: '1px solid #334155'
-                    },
-                });
-
-                setTimeout(() => navigate('/admin'), 1500);
-            } catch (err) {
-                const errorMsg = err.response?.data?.error || err.message || "Unknown error";
-                const isTimeoutError = errorMsg.includes('buffering timed out') || err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT';
-
-                console.error(`[Attempt ${retryCount + 1}] Error:`, errorMsg);
-
-                if (isTimeoutError && retryCount < 2) {
-                    // Retry up to 3 times (retryCount 0, 1, 2)
-                    toast.dismiss(loadingToast);
-                    const waitTime = 3000 + (retryCount * 2000); // 3s, then 5s, then 7s
-                    const retryToast = toast.loading(`Database busy... Retrying in ${waitTime / 1000}s (Attempt ${retryCount + 2}/3)`);
-
-                    setTimeout(() => {
-                        toast.dismiss(retryToast);
-                        submitQuestion(retryCount + 1);
-                    }, waitTime);
+            Object.entries(formData).forEach(([key, value]) => {
+                if (key === "options") {
+                    value.forEach((opt) => data.append("options", opt));
                 } else {
-                    // Max retries reached or different error
-                    toast.dismiss(loadingToast);
-
-                    if (isTimeoutError) {
-                        toast.error("⚠️ Database Connection Failed - Backend may be down. Try again in a moment.", { duration: 6000 });
-                    } else {
-                        toast.error(`Error: ${errorMsg}`, { duration: 6000 });
-                    }
-
-                    console.error("Final error after retries:", {
-                        error: errorMsg,
-                        status: err.response?.status,
-                        data: err.response?.data
-                    });
+                    data.append(key, value);
                 }
-            }
-        };
+            });
 
-        submitQuestion();
+            if (file) data.append("graphImage", file);
+
+            await axios.post(`${BASE_URL}/api/questions/add`, data, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            toast.dismiss(loading);
+            toast.success("Question Added 🚀");
+
+            setTimeout(() => navigate("/admin"), 1200);
+        } catch (err) {
+            toast.dismiss(loading);
+            toast.error("Upload failed");
+        }
     };
 
-    // Shared tailwind class for all text inputs to handle placeholder color
-    const inputClasses = "w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900 placeholder-slate-500";
-
     return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-12 transition-colors duration-300">
-            <div className="max-w-5xl mx-auto">
+        <div className="min-h-screen bg-slate-100 p-3">
+            <div className="max-w-[1700px] mx-auto">
 
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-                    <div>
-                        <button
-                            onClick={() => navigate('/admin')}
-                            className="flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors font-bold text-sm mb-2"
-                        >
-                            <ChevronLeft size={18} /> Back to Dashboard
-                        </button>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            Add New <span className="text-slate-500">Question</span>
-                        </h1>
-                    </div>
+                {/* HEADER */}
+                <div className="flex justify-between items-center mb-3">
+                    <button
+                        onClick={() => navigate("/admin")}
+                        className="flex items-center gap-2 text-slate-600 hover:text-black font-semibold"
+                    >
+                        <ChevronLeft size={18} /> Back
+                    </button>
+
                     <button
                         form="upload-form"
                         type="submit"
-                        className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-slate-200 transition-all active:scale-95"
+                        className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2 rounded-xl font-bold shadow"
                     >
-                        <UploadCloud size={20} /> Upload Question
+                        <UploadCloud size={18} /> Upload
                     </button>
                 </div>
 
-                <form id="upload-form" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <form id="upload-form" onSubmit={handleSubmit} className="space-y-3">
 
-                    {/* Main Content Area */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
-                                <BookOpen size={14} /> Question Statement
-                            </label>
-                            <textarea
-                                placeholder="Write the question here..."
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-lg font-medium placeholder-slate-500"
-                                rows={3}
-                                required
-                                onChange={(e) => setFormData({ ...formData, questionText: e.target.value })}
-                            />
+                    {/* QUESTION */}
+                    <div className="bg-white p-3 rounded-2xl shadow border">
+                        <label className="text-xs font-bold text-slate-500">
+                            Question
+                        </label>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                                {formData.options.map((opt, i) => (
-                                    <div key={i} className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300 dark:text-slate-700">
-                                            {String.fromCharCode(65 + i)}
-                                        </span>
-                                        <input
-                                            type="text"
-                                            placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                                            className="w-full pl-10 pr-4 py-4 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all font-bold placeholder-slate-500"
-                                            required
-                                            onChange={(e) => handleOptionChange(i, e.target.value)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
-                                Step-by-Step Solution
-                            </label>
-                            <textarea
-                                placeholder="Explain the logic behind the correct answer..."
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-sm leading-relaxed placeholder-slate-500"
-                                rows={5}
-                                required
-                                onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            placeholder="Enter question..."
+                            className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold placeholder-slate-500 text-slate-900"
+                            required
+                            onChange={(e) =>
+                                setFormData({ ...formData, questionText: e.target.value })
+                            }
+                        />
                     </div>
 
-                    {/* Sidebar Area */}
-                    <div className="space-y-6">
-                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <div className="space-y-5">
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Layers size={12} /> Topic
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Percentage"
-                                        className={inputClasses}
-                                        required
-                                        onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Building2 size={12} /> Company
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. TCS, Infosys"
-                                        className={inputClasses}
-                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <BarChart size={12} /> Category
-                                    </label>
-                                    <select
-                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900"
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
-                                        <option value="Quantitative">Quantitative</option>
-                                        <option value="Logical">Logical</option>
-                                        <option value="Verbal">Verbal</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
-                                        <Layers size={12} /> Difficulty
-                                    </label>
-                                    <select
-                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900"
-                                        value={formData.difficulty}
-                                        onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                                    >
-                                        <option value="Easy">Easy</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Hard">Hard</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-900 mb-2">
-                                        <CheckCircle2 size={12} /> Correct Answer
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="Match the option exactly"
-                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-black text-sm outline-none focus:border-slate-900 placeholder-slate-400"
-                                        required
-                                        onChange={(e) => setFormData({ ...formData, correctAnswer: e.target.value })}
-                                    />
-                                </div>
-                            </div>
+                    {/* OPTIONS */}
+                    <div className="bg-white p-3 rounded-2xl shadow border grid grid-cols-4 gap-2">
+                        {formData.options.map((opt, i) => (
+                            <input
+                                key={i}
+                                type="text"
+                                placeholder={`Option ${String.fromCharCode(65 + i)}`}
+                                className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold placeholder-slate-500 text-slate-900"
+                                required
+                                onChange={(e) => handleOptionChange(i, e.target.value)}
+                            />
+                        ))}
+                    </div>
+
+                    {/* META FIELDS */}
+                    <div className="bg-white p-3 rounded-2xl shadow border grid grid-cols-5 gap-2">
+
+                        <input
+                            type="text"
+                            placeholder="Topic"
+                            className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold placeholder-slate-500 text-slate-900"
+                            required
+                            onChange={(e) =>
+                                setFormData({ ...formData, topic: e.target.value })
+                            }
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Company"
+                            className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold placeholder-slate-500 text-slate-900"
+                            onChange={(e) =>
+                                setFormData({ ...formData, company: e.target.value })
+                            }
+                        />
+
+                        <select
+                            className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+                            value={formData.category}
+                            onChange={(e) =>
+                                setFormData({ ...formData, category: e.target.value })
+                            }
+                        >
+                            <option>Quantitative</option>
+                            <option>Logical</option>
+                            <option>Verbal</option>
+                        </select>
+
+                        <select
+                            className="p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+                            value={formData.difficulty}
+                            onChange={(e) =>
+                                setFormData({ ...formData, difficulty: e.target.value })
+                            }
+                        >
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+
+                        <input
+                            type="text"
+                            placeholder="Correct Answer"
+                            className="p-2 rounded-xl border border-black/20 bg-slate-50 font-bold placeholder-slate-500 text-slate-900"
+                            required
+                            onChange={(e) =>
+                                setFormData({ ...formData, correctAnswer: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    {/* BOTTOM */}
+                    <div className="grid grid-cols-2 gap-3">
+
+                        {/* SOLUTION */}
+                        <div className="bg-white p-3 rounded-2xl shadow border">
+                            <label className="text-xs font-bold text-slate-500">
+                                Solution
+                            </label>
+
+                            <textarea
+                                rows={4}
+                                placeholder="Step-by-step solution..."
+                                className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 placeholder-slate-500 text-slate-900"
+                                required
+                                onChange={(e) =>
+                                    setFormData({ ...formData, solution: e.target.value })
+                                }
+                            />
                         </div>
 
-                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">
-                                <ImageIcon size={14} /> Attach Visual (Optional)
+                        {/* IMAGE */}
+                        <div className="bg-white p-3 rounded-2xl shadow border border-black/10">
+                            <label className="text-xs font-bold text-black">
+                                Attach Visual
                             </label>
-                            <div className="mb-4 bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col items-center justify-center text-center">
+
+                            <div className="mt-2 p-3 border border-black/20 rounded-xl bg-white text-center">
                                 {file ? (
-                                    <p className="text-xs text-slate-900 font-bold truncate w-full">Selected: {file.name}</p>
+                                    <p className="text-sm font-semibold text-black truncate">
+                                        Selected: {file.name}
+                                    </p>
                                 ) : (
-                                    <p className="text-[10px] text-slate-400 leading-tight">Best for Graphs or Tables</p>
+                                    <p className="text-xs text-black/60">
+                                        Best for Graphs or Tables
+                                    </p>
                                 )}
                             </div>
+
                             <input
                                 type="file"
-                                className="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-black cursor-pointer"
+                                className="mt-2 w-full text-sm text-black
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-lg file:border
+              file:border-black
+              file:text-sm file:font-semibold
+              file:bg-black file:text-white
+              hover:file:bg-white hover:file:text-black
+              hover:file:border-black
+              cursor-pointer"
                                 onChange={(e) => setFile(e.target.files[0])}
                             />
                         </div>
+
                     </div>
                 </form>
             </div>
         </div>
     );
+
 };
 
 export default AdminUpload;

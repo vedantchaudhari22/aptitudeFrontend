@@ -81,6 +81,25 @@ const QuestionDetail = () => {
         return seconds < 10 ? `0${seconds}` : seconds;
     };
 
+    // Helper to generate consistent colors based on string
+    const getColorForString = (str) => {
+        const colors = [
+            "bg-blue-50 text-blue-700 border-blue-200",
+            "bg-purple-50 text-purple-700 border-purple-200",
+            "bg-pink-50 text-pink-700 border-pink-200",
+            "bg-orange-50 text-orange-700 border-orange-200",
+            "bg-emerald-50 text-emerald-700 border-emerald-200",
+            "bg-cyan-50 text-cyan-700 border-cyan-200",
+            "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "bg-rose-50 text-rose-700 border-rose-200"
+        ];
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    };
+
     if (!q) return (
         <div className="flex justify-center items-center h-screen bg-slate-50 font-bold text-slate-400 uppercase tracking-widest animate-pulse">
             Loading ZenCode...
@@ -88,7 +107,7 @@ const QuestionDetail = () => {
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 px-4 py-3 md:px-8 lg:px-12 overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 px-4 py-3 md:px-6 lg:px-8 overflow-hidden transition-colors duration-300">
             <div className="max-w-[1200px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
 
@@ -102,12 +121,12 @@ const QuestionDetail = () => {
                         </button>
 
                         <div className="mb-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-800 px-3 py-1 rounded-lg border border-slate-200">
+                            <div className="flex flex-wrap items-center gap-2 mb-4">
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${getColorForString(q.topic || 'default')}`}>
                                     {q.topic}
                                 </span>
                                 {q.company && (
-                                    <span className="text-[10px] font-black uppercase tracking-widest bg-slate-50 text-slate-600 px-3 py-1 rounded-lg border border-slate-200">
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${getColorForString(q.company)}`}>
                                         {q.company}
                                     </span>
                                 )}

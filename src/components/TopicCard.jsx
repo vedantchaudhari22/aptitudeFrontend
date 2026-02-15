@@ -4,27 +4,28 @@ const TopicCard = ({ title, description, icon, colorClass, onClick }) => {
   return (
     <div
       onClick={onClick}
-      // Added dark:bg-slate-900 and dark:border-slate-800 for the dark theme
-      className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 hover:-translate-y-2 transition-all cursor-pointer group transition-colors duration-300"
+      className="bg-white/80 backdrop-blur-sm p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/60 hover:border-slate-200 transition-all duration-300 cursor-pointer group h-full flex flex-col items-start relative overflow-hidden"
     >
-      {/* Icon container with conditional dark mode shadow adjustment */}
-      <div className={`w-16 h-16 rounded-2xl ${colorClass} flex items-center justify-center text-3xl mb-6 shadow-lg shadow-blue-200/50`}>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[5rem] -mr-8 -mt-8 z-0 transition-transform group-hover:scale-110 duration-500" />
+
+      {/* Icon container */}
+      <div className={`relative z-10 w-16 h-16 rounded-2xl ${colorClass} flex items-center justify-center text-3xl mb-6 shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
         {icon}
       </div>
 
-      {/* Title shifts to white in dark mode and blue on hover */}
-      <h3 className="text-xl font-black text-slate-800 mb-2 group-hover:text-slate-900 transition-colors">
+      {/* Title */}
+      <h3 className="relative z-10 text-2xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-300 tracking-tight">
         {title}
       </h3>
 
-      {/* Description text becomes muted slate in dark mode */}
-      <p className="text-slate-500 text-sm leading-relaxed mb-6">
+      {/* Description */}
+      <p className="relative z-10 text-slate-500 text-sm font-medium leading-relaxed mb-8 flex-grow">
         {description}
       </p>
 
-      {/* CTA link shifts to blue-400 for better visibility in dark mode */}
-      <div className="flex items-center gap-2 text-slate-900 font-bold text-sm uppercase tracking-wider group-hover:underline decoration-2 underline-offset-4">
-        Start Practice <span>→</span>
+      {/* CTA link */}
+      <div className="relative z-10 mt-auto flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-widest group-hover:gap-3 transition-all">
+        Start Now <span className="text-xl">→</span>
       </div>
     </div>
   );

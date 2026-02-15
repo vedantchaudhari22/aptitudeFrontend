@@ -84,11 +84,11 @@ const AdminDashboard = () => {
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-10 transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 p-4 md:p-6 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
 
                 {/* Upper Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
                         <h1 className="text-4xl font-black text-slate-900 tracking-tight">
                             Command <span className="text-slate-500">Center</span>
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Content Table Container */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden transition-all min-h-[400px]">
+                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden transition-all">
                     {loading ? (
                         <div className="py-20 flex flex-col items-center justify-center gap-4">
                             <Loader2 className="animate-spin text-slate-900" size={40} />
@@ -174,45 +174,67 @@ const AdminDashboard = () => {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {viewMode === "questions" ? (
-                                        filteredQuestions.map((q) => (
-                                            <tr key={q._id} className="hover:bg-slate-50/80 transition-colors group">
-                                                <td className="p-6 max-w-md">
-                                                    <p className="text-slate-800 font-bold leading-tight line-clamp-2">{q.questionText}</p>
-                                                    <p className="text-[9px] font-black text-slate-400 mt-1 uppercase">ID: {q._id.slice(-6)}</p>
-                                                </td>
-                                                <td className="p-6">
-                                                    <span className="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-slate-200">{q.topic}</span>
-                                                </td>
-                                                <td className="p-6 text-slate-500 text-xs font-bold uppercase tracking-tighter">
-                                                    <Building2 size={14} className="inline mr-1 opacity-40" /> {q.company || "General"}
-                                                </td>
-                                                <td className="p-6 text-center">
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Link to={`/admin/edit/${q._id}`} className="p-2 bg-white text-slate-600 rounded-lg border border-slate-200 hover:bg-slate-900 hover:text-white transition-all"><Edit3 size={16} /></Link>
-                                                        <button onClick={() => handleDeleteQuestion(q._id)} className="p-2 bg-white text-slate-400 rounded-lg border border-slate-200 hover:bg-slate-900 hover:text-white transition-all"><Trash2 size={16} /></button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        filteredLectures.map((l) => (
-                                            <tr key={l._id} className="hover:bg-slate-50 transition-colors group">
-                                                <td className="p-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors"><PlayCircle size={18} /></div>
-                                                        <div>
-                                                            <p className="font-bold text-slate-800 leading-tight">{l.topic}</p>
-                                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{l.category}</p>
+                                        filteredQuestions.length > 0 ? (
+                                            filteredQuestions.map((q) => (
+                                                <tr key={q._id} className="hover:bg-slate-50/80 transition-colors group">
+                                                    <td className="p-6 max-w-md">
+                                                        <p className="text-slate-800 font-bold leading-tight line-clamp-2">{q.questionText}</p>
+                                                        <p className="text-[9px] font-black text-slate-400 mt-1 uppercase">ID: {q._id.slice(-6)}</p>
+                                                    </td>
+                                                    <td className="p-6">
+                                                        <span className="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-slate-200">{q.topic}</span>
+                                                    </td>
+                                                    <td className="p-6 text-slate-500 text-xs font-bold uppercase tracking-tighter">
+                                                        <Building2 size={14} className="inline mr-1 opacity-40" /> {q.company || "General"}
+                                                    </td>
+                                                    <td className="p-6 text-center">
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Link to={`/admin/edit/${q._id}`} className="p-2 bg-white text-slate-600 rounded-lg border border-slate-200 hover:bg-slate-900 hover:text-white transition-all"><Edit3 size={16} /></Link>
+                                                            <button onClick={() => handleDeleteQuestion(q._id)} className="p-2 bg-white text-slate-400 rounded-lg border border-slate-200 hover:bg-slate-900 hover:text-white transition-all"><Trash2 size={16} /></button>
                                                         </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4} className="py-2 text-center">
+                                                    <div className="flex flex-col items-center gap-4 opacity-40">
+                                                        <BookOpen size={64} className="text-slate-300" />
+                                                        <p className="text-slate-900 font-black uppercase tracking-widest text-xs">No questions found</p>
                                                     </div>
                                                 </td>
-                                                <td className="p-6 max-w-xs text-[11px] text-slate-500 font-medium italic line-clamp-2">"{l.description}"</td>
-                                                <td className="p-6 text-center text-xs font-black text-slate-400">{l.duration}</td>
-                                                <td className="p-6 text-center">
-                                                    <button onClick={() => handleDeleteLecture(l._id)} className="p-2.5 bg-white text-slate-400 rounded-xl border border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm"><Trash2 size={18} /></button>
+                                            </tr>
+                                        )
+                                    ) : (
+                                        filteredLectures.length > 0 ? (
+                                            filteredLectures.map((l) => (
+                                                <tr key={l._id} className="hover:bg-slate-50 transition-colors group">
+                                                    <td className="p-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors"><PlayCircle size={18} /></div>
+                                                            <div>
+                                                                <p className="font-bold text-slate-800 leading-tight">{l.topic}</p>
+                                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{l.category}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-6 max-w-xs text-[11px] text-slate-500 font-medium italic line-clamp-2">"{l.description}"</td>
+                                                    <td className="p-6 text-center text-xs font-black text-slate-400">{l.duration}</td>
+                                                    <td className="p-6 text-center">
+                                                        <button onClick={() => handleDeleteLecture(l._id)} className="p-2.5 bg-white text-slate-400 rounded-xl border border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm"><Trash2 size={18} /></button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4} className="py-32 text-center">
+                                                    <div className="flex flex-col items-center gap-4 opacity-40">
+                                                        <BookOpen size={64} className="text-slate-300" />
+                                                        <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No lectures found</p>
+                                                    </div>
                                                 </td>
                                             </tr>
-                                        ))
+                                        )
                                     )}
                                 </tbody>
                             </table>
