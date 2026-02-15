@@ -10,7 +10,7 @@ const Learn = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     // const BASE_URL = "http://localhost:5000";
-    const BASE_URL = "https://aptitude-backend.vercel.app";
+    const BASE_URL = "https://aptitude-new-backend.vercel.app";
 
     // 1. Fetch Lectures from Backend
     useEffect(() => {

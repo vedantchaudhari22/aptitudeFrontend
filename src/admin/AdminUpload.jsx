@@ -20,7 +20,7 @@ const AdminUpload = () => {
         options: ["", "", "", ""],
     });
 
-    const BASE_URL = "https://aptitude-backend.vercel.app";
+    const BASE_URL = "https://aptitude-new-backend.vercel.app";
 
     const handleOptionChange = (i, val) => {
         const newOpts = [...formData.options];

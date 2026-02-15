@@ -19,7 +19,7 @@ const AptitudePlatform = () => {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        let url = `https://aptitude-backend.vercel.app/api/questions?`;
+        let url = `https://aptitude-new-backend.vercel.app/api/questions?`;
         if (activeTopic) url += `topic=${activeTopic}&`;
         if (selectedCompany) url += `company=${selectedCompany}`;
 
