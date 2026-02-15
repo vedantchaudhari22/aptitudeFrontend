@@ -82,50 +82,50 @@ const QuestionDetail = () => {
     };
 
     if (!q) return (
-        <div className="flex justify-center items-center h-screen bg-slate-50 dark:bg-slate-950 font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+        <div className="flex justify-center items-center h-screen bg-slate-50 font-bold text-slate-400 uppercase tracking-widest animate-pulse">
             Loading ZenCode...
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-3 md:px-8 lg:px-12 overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 px-4 py-3 md:px-8 lg:px-12 overflow-hidden transition-colors duration-300">
             <div className="max-w-[1200px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
 
                     {/* LEFT SIDE: Question Area */}
-                    <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-100 dark:border-slate-800">
+                    <div className="lg:col-span-8 bg-white rounded-[2rem] p-6 shadow-xl border border-slate-100">
                         <button
                             onClick={() => navigate(-1)}
-                            className="text-blue-600 dark:text-blue-400 text-sm font-black mb-6 hover:translate-x-[-4px] transition-transform flex items-center gap-2 uppercase tracking-tighter"
+                            className="text-slate-500 text-sm font-black mb-6 hover:translate-x-[-4px] transition-transform flex items-center gap-2 uppercase tracking-tighter hover:text-slate-900"
                         >
                             <span>←</span> Back to Topics
                         </button>
 
                         <div className="mb-6">
                             <div className="flex items-center gap-2 mb-4">
-                                <span className="text-[10px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-lg border border-blue-100 dark:border-blue-800">
+                                <span className="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-800 px-3 py-1 rounded-lg border border-slate-200">
                                     {q.topic}
                                 </span>
                                 {q.company && (
-                                    <span className="text-[10px] font-black uppercase tracking-widest bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-lg border border-orange-100 dark:border-orange-800">
+                                    <span className="text-[10px] font-black uppercase tracking-widest bg-slate-50 text-slate-600 px-3 py-1 rounded-lg border border-slate-200">
                                         {q.company}
                                     </span>
                                 )}
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${q.difficulty === 'Easy' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                    q.difficulty === 'Hard' ? 'bg-red-50 text-red-600 border-red-100' :
-                                        'bg-amber-50 text-amber-600 border-amber-100'
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${q.difficulty === 'Easy' ? 'bg-slate-50 text-slate-600 border-slate-200' :
+                                    q.difficulty === 'Hard' ? 'bg-slate-900 text-white border-slate-900' :
+                                        'bg-slate-100 text-slate-900 border-slate-300'
                                     }`}>
                                     {q.difficulty}
                                 </span>
                             </div>
 
-                            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-snug">
+                            <h2 className="text-xl md:text-2xl font-bold text-slate-800 leading-snug">
                                 {q.questionText}
                             </h2>
                         </div>
 
                         {q.imageUrl && (
-                            <div className="mb-6 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+                            <div className="mb-6 rounded-3xl overflow-hidden border border-slate-200 bg-slate-50 p-4">
                                 <img
                                     src={`${BASE_URL}${q.imageUrl}`}
                                     alt="Logic Graph"
@@ -152,8 +152,8 @@ const QuestionDetail = () => {
                             disabled={!selected || submitted}
                             onClick={handleFinalSubmission}
                             className={`mt-8 w-full py-4 rounded-2xl font-black text-lg transition-all shadow-xl ${!selected || submitted
-                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
-                                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-blue-500/20'
+                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                : 'bg-slate-900 text-white hover:bg-black active:scale-95 shadow-slate-500/20'
                                 }`}
                         >
                             {submitted ? "Evaluation Done" : "Confirm Submission"}
@@ -163,29 +163,29 @@ const QuestionDetail = () => {
                     {/* RIGHT SIDE: Sidebar */}
                     <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-4">
                         {!submitted ? (
-                            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center">
-                                <div className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-2">Timer</div>
-                                <p className={`text-5xl font-black tabular-nums ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-slate-800 dark:text-slate-100'}`}>
+                            <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col items-center">
+                                <div className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Timer</div>
+                                <p className={`text-5xl font-black tabular-nums ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-slate-800'}`}>
                                     00:{formatTime(timeLeft)}
                                 </p>
                             </div>
                         ) : (
-                            <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-2xl border-l-8 border-green-500 animate-in slide-in-from-right-10 duration-500 max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            <div className="bg-white p-6 rounded-[2rem] shadow-2xl border-l-8 border-slate-900 animate-in slide-in-from-right-10 duration-500 max-h-[85vh] overflow-y-auto custom-scrollbar">
                                 <div className="flex items-center gap-2 mb-6">
-                                    <div className="p-2 bg-green-50 dark:bg-green-900/30 text-green-600 rounded-lg">
+                                    <div className="p-2 bg-slate-100 text-slate-900 rounded-lg">
                                         <CheckCircle2 size={20} />
                                     </div>
-                                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Step-by-Step Guide</h3>
+                                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Step-by-Step Guide</h3>
                                 </div>
 
-                                <div className="mb-6 p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-800/50 text-center">
-                                    <p className="text-[10px] text-green-600 font-black uppercase mb-1">Key Answer</p>
-                                    <p className="text-xl font-black text-slate-900 dark:text-white">{q.correctAnswer}</p>
+                                <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+                                    <p className="text-[10px] text-slate-500 font-black uppercase mb-1">Key Answer</p>
+                                    <p className="text-xl font-black text-slate-900">{q.correctAnswer}</p>
                                 </div>
 
                                 <div className="space-y-3">
                                     {q.solution.split(/(?=Step)/g).map((step, index) => (
-                                        <div key={index} className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-bold bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <div key={index} className="text-xs text-slate-600 leading-relaxed font-bold bg-slate-50 p-4 rounded-xl border border-slate-100">
                                             {step.trim()}
                                         </div>
                                     ))}
@@ -198,7 +198,7 @@ const QuestionDetail = () => {
                                         setTimeLeft(45);
                                         window.scrollTo(0, 0);
                                     }}
-                                    className="mt-6 w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-black hover:scale-[0.98] transition-all"
+                                    className="mt-6 w-full py-3 bg-slate-900 text-white rounded-xl text-sm font-black hover:scale-[0.98] transition-all"
                                 >
                                     Re-attempt Problem
                                 </button>

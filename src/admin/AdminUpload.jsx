@@ -68,7 +68,7 @@ const AdminUpload = () => {
         const submitQuestion = async (retryCount = 0) => {
             try {
                 const data = new FormData();
-                
+
                 // Append all fields from formData
                 data.append('questionText', formData.questionText);
                 data.append('topic', formData.topic);
@@ -77,7 +77,7 @@ const AdminUpload = () => {
                 data.append('correctAnswer', formData.correctAnswer);
                 data.append('solution', formData.solution);
                 data.append('company', formData.company || '');
-                
+
                 // Append options as individual fields
                 formData.options.forEach((option) => {
                     data.append(`options`, option);
@@ -113,15 +113,15 @@ const AdminUpload = () => {
             } catch (err) {
                 const errorMsg = err.response?.data?.error || err.message || "Unknown error";
                 const isTimeoutError = errorMsg.includes('buffering timed out') || err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT';
-                
+
                 console.error(`[Attempt ${retryCount + 1}] Error:`, errorMsg);
 
                 if (isTimeoutError && retryCount < 2) {
                     // Retry up to 3 times (retryCount 0, 1, 2)
                     toast.dismiss(loadingToast);
                     const waitTime = 3000 + (retryCount * 2000); // 3s, then 5s, then 7s
-                    const retryToast = toast.loading(`Database busy... Retrying in ${waitTime/1000}s (Attempt ${retryCount + 2}/3)`);
-                    
+                    const retryToast = toast.loading(`Database busy... Retrying in ${waitTime / 1000}s (Attempt ${retryCount + 2}/3)`);
+
                     setTimeout(() => {
                         toast.dismiss(retryToast);
                         submitQuestion(retryCount + 1);
@@ -129,13 +129,13 @@ const AdminUpload = () => {
                 } else {
                     // Max retries reached or different error
                     toast.dismiss(loadingToast);
-                    
+
                     if (isTimeoutError) {
                         toast.error("⚠️ Database Connection Failed - Backend may be down. Try again in a moment.", { duration: 6000 });
                     } else {
                         toast.error(`Error: ${errorMsg}`, { duration: 6000 });
                     }
-                    
+
                     console.error("Final error after retries:", {
                         error: errorMsg,
                         status: err.response?.status,
@@ -149,10 +149,10 @@ const AdminUpload = () => {
     };
 
     // Shared tailwind class for all text inputs to handle placeholder color
-    const inputClasses = "w-full p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white font-bold text-sm outline-none focus:border-blue-500 placeholder-slate-500 dark:placeholder-slate-400";
+    const inputClasses = "w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900 placeholder-slate-500";
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-12 transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 p-4 md:p-12 transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
 
                 {/* Header Section */}
@@ -160,18 +160,18 @@ const AdminUpload = () => {
                     <div>
                         <button
                             onClick={() => navigate('/admin')}
-                            className="flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold text-sm mb-2"
+                            className="flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors font-bold text-sm mb-2"
                         >
                             <ChevronLeft size={18} /> Back to Dashboard
                         </button>
-                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Add New <span className="text-blue-600">Question</span>
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+                            Add New <span className="text-slate-500">Question</span>
                         </h1>
                     </div>
                     <button
                         form="upload-form"
                         type="submit"
-                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-blue-500/20 transition-all active:scale-95"
+                        className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-slate-200 transition-all active:scale-95"
                     >
                         <UploadCloud size={20} /> Upload Question
                     </button>
@@ -181,13 +181,13 @@ const AdminUpload = () => {
 
                     {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
                             <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
                                 <BookOpen size={14} /> Question Statement
                             </label>
                             <textarea
                                 placeholder="Write the question here..."
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-800 dark:bg-slate-950 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all text-lg font-medium placeholder-slate-500 dark:placeholder-slate-400"
+                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-lg font-medium placeholder-slate-500"
                                 rows={3}
                                 required
                                 onChange={(e) => setFormData({ ...formData, questionText: e.target.value })}
@@ -202,7 +202,7 @@ const AdminUpload = () => {
                                         <input
                                             type="text"
                                             placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                                            className="w-full pl-10 pr-4 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 dark:bg-slate-950 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold placeholder-slate-500 dark:placeholder-slate-400"
+                                            className="w-full pl-10 pr-4 py-4 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all font-bold placeholder-slate-500"
                                             required
                                             onChange={(e) => handleOptionChange(i, e.target.value)}
                                         />
@@ -211,13 +211,13 @@ const AdminUpload = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
                             <label className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">
                                 Step-by-Step Solution
                             </label>
                             <textarea
                                 placeholder="Explain the logic behind the correct answer..."
-                                className="w-full p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-800 dark:bg-slate-950 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all text-sm leading-relaxed placeholder-slate-500 dark:placeholder-slate-400"
+                                className="w-full p-5 rounded-2xl border-2 border-slate-100 text-slate-900 focus:border-slate-900 outline-none transition-all text-sm leading-relaxed placeholder-slate-500"
                                 rows={5}
                                 required
                                 onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
@@ -227,7 +227,7 @@ const AdminUpload = () => {
 
                     {/* Sidebar Area */}
                     <div className="space-y-6">
-                        <div className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
                             <div className="space-y-5">
                                 <div>
                                     <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-2">
@@ -257,7 +257,7 @@ const AdminUpload = () => {
                                         <BarChart size={12} /> Category
                                     </label>
                                     <select
-                                        className="w-full p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white font-bold text-sm outline-none focus:border-blue-500"
+                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900"
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                     >
@@ -271,7 +271,7 @@ const AdminUpload = () => {
                                         <Layers size={12} /> Difficulty
                                     </label>
                                     <select
-                                        className="w-full p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white font-bold text-sm outline-none focus:border-blue-500"
+                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 font-bold text-sm outline-none focus:border-slate-900"
                                         value={formData.difficulty}
                                         onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
                                     >
@@ -281,13 +281,13 @@ const AdminUpload = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-emerald-500 mb-2">
+                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-900 mb-2">
                                         <CheckCircle2 size={12} /> Correct Answer
                                     </label>
                                     <input
                                         type="text"
                                         placeholder="Match the option exactly"
-                                        className="w-full p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800 text-slate-900 dark:text-emerald-400 font-black text-sm outline-none focus:border-emerald-500 placeholder-emerald-600/50 dark:placeholder-emerald-400/40"
+                                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-black text-sm outline-none focus:border-slate-900 placeholder-slate-400"
                                         required
                                         onChange={(e) => setFormData({ ...formData, correctAnswer: e.target.value })}
                                     />
@@ -295,20 +295,20 @@ const AdminUpload = () => {
                             </div>
                         </div>
 
-                        <div className="bg-blue-600 dark:bg-blue-900/30 p-6 rounded-[2.5rem] border border-blue-500/20 shadow-lg shadow-blue-500/10">
-                            <label className="flex items-center gap-2 text-[10px] font-black uppercase text-white mb-4 tracking-widest">
+                        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                            <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">
                                 <ImageIcon size={14} /> Attach Visual (Optional)
                             </label>
-                            <div className="mb-4 bg-slate-950/50 rounded-xl p-4 border border-white/10 flex flex-col items-center justify-center text-center">
+                            <div className="mb-4 bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col items-center justify-center text-center">
                                 {file ? (
-                                    <p className="text-xs text-emerald-400 font-bold truncate w-full">Selected: {file.name}</p>
+                                    <p className="text-xs text-slate-900 font-bold truncate w-full">Selected: {file.name}</p>
                                 ) : (
-                                    <p className="text-[10px] text-white/50 leading-tight">Best for Graphs or Tables</p>
+                                    <p className="text-[10px] text-slate-400 leading-tight">Best for Graphs or Tables</p>
                                 )}
                             </div>
                             <input
                                 type="file"
-                                className="w-full text-[10px] text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-white file:text-blue-600 hover:file:bg-blue-50 cursor-pointer"
+                                className="w-full text-[10px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-slate-900 file:text-white hover:file:bg-black cursor-pointer"
                                 onChange={(e) => setFile(e.target.files[0])}
                             />
                         </div>

@@ -5,23 +5,24 @@ import QuestionCard from '../components/QuestionCard';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SkeletonLoader from '../components/SkeletonLoader';
 import EmptyState from '../components/EmptyState';
+import Navbar from '../components/Navbar';
 
 const AptitudePlatform = () => {
-  const [activeTopic, setActiveTopic] = useState(""); // "" fetches all questions
+  const [activeTopic, setActiveTopic] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState(""); // Track selected company
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0); // Add state to force re-fetch
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Track mobile sidebar state
 
+  // Fetch data whenever topic or company changes
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        // const url = activeTopic 
-        //   ? `http://localhost:5000/api/questions?topic=${activeTopic}` 
-        //   : `http://localhost:5000/api/questions`;
-        const url = activeTopic
-          ? `https://aptitude-backend.vercel.app/api/questions?topic=${activeTopic}`
-          : `https://aptitude-backend.vercel.app/api/questions`;
+        let url = `https://aptitude-backend.vercel.app/api/questions?`;
+        if (activeTopic) url += `topic=${activeTopic}&`;
+        if (selectedCompany) url += `company=${selectedCompany}`;
+
         const res = await axios.get(url);
         setQuestions(res.data);
       } catch (err) {
@@ -31,45 +32,59 @@ const AptitudePlatform = () => {
       }
     };
     fetchQuestions();
-  }, [activeTopic, refreshKey]); // Add refreshKey directly to dependency array
-
-  const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
-  };
+  }, [activeTopic, selectedCompany]); // Dependency array handles dynamic updates
 
   return (
-    // Added transition-colors for a smooth theme shift
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden transition-colors duration-300">
-      <Sidebar onSelectTopic={setActiveTopic} activeTopic={activeTopic} />
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 transition-colors duration-300">
 
-      {/* Updated main background to support dark:bg-slate-950 */}
-      <main className="flex-1 bg-slate-50 dark:bg-slate-950 p-8 overflow-y-auto transition-colors duration-300">
-        <div className="max-w-5xl mx-auto">
-          <Breadcrumbs activeTopic={activeTopic} />
+      {/* Navbar removed to prevent duplication with App.jsx */}
 
-          <div className="mb-8">
-            {/* Updated title and subtitle text for dark mode visibility */}
-            <h2 className="text-3xl font-bold text-slate-800 dark:text-white italic">
-              {activeTopic || "All Questions"}
-            </h2>
-            <p className="text-slate-400 dark:text-slate-500 font-medium">
-              {questions.length} questions found
-            </p>
-          </div>
+      <div className="flex flex-1 overflow-hidden relative">
 
-          {loading ? (
-            <SkeletonLoader />
-          ) : questions.length > 0 ? (
-            <div className="grid gap-4">
-              {questions.map((q, i) => (
-                <QuestionCard key={q._id} question={q} index={i} />
-              ))}
+        {/* Sidebar receiving all filtering props */}
+        <Sidebar
+          onSelectTopic={setActiveTopic}
+          activeTopic={activeTopic}
+          selectedCompany={selectedCompany}
+          onSelectCompany={setSelectedCompany}
+          isMobileOpen={isSidebarOpen}
+          setIsMobileOpen={setIsSidebarOpen}
+        />
+
+        {/* Main Content Area */}
+        <main className="flex-1 p-4 md:p-10 overflow-y-auto">
+          <div className="max-w-5xl mx-auto">
+            <Breadcrumbs activeTopic={activeTopic} />
+
+            <div className="mb-10">
+              <h2 className="text-4xl font-black text-slate-900 flex flex-wrap items-center gap-4">
+                {selectedCompany && (
+                  <span className="text-blue-600 bg-blue-50 px-4 py-2 rounded-2xl text-xs uppercase tracking-widest border border-blue-100">
+                    {selectedCompany}
+                  </span>
+                )}
+                <span className="italic tracking-tight">{activeTopic || "All Questions"}</span>
+              </h2>
+              <p className="text-slate-400 font-medium mt-2">
+                We found {questions.length} questions tailored for your selection.
+              </p>
             </div>
-          ) : (
-            <EmptyState topic={activeTopic} onRefresh={handleRefresh} />
-          )}
-        </div>
-      </main>
+
+            {/* Questions Grid */}
+            {loading ? (
+              <SkeletonLoader />
+            ) : questions.length > 0 ? (
+              <div className="grid gap-6">
+                {questions.map((q, i) => (
+                  <QuestionCard key={q._id} question={q} index={i} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState topic={activeTopic} />
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
