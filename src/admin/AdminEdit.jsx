@@ -98,10 +98,10 @@ const AdminEdit = () => {
               Question
             </label>
 
-            <input
-              type="text"
+            <textarea
+              rows={2}
               value={formData.questionText}
-              className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900"
+              className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold text-slate-900 resize-none"
               onChange={(e) =>
                 setFormData({ ...formData, questionText: e.target.value })
               }
