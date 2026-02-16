@@ -7,19 +7,19 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import EmptyState from '../components/EmptyState';
 import Navbar from '../components/Navbar';
 
-const AptitudePlatform = () => {
+const AptitudePlatform = ({ isMobileOpen, setIsMobileOpen }) => {
   const [activeTopic, setActiveTopic] = useState("");
   const [selectedCompany, setSelectedCompany] = useState(""); // Track selected company
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Track mobile sidebar state
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Removed local state
 
   // Fetch data whenever topic or company changes
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        let url = `https://aptitude-new-backend.vercel.app/api/questions?`;
+        let url = `https://aptitude-test-backend.vercel.app/api/questions?`;
         if (activeTopic) url += `topic=${activeTopic}&`;
         if (selectedCompany) url += `company=${selectedCompany}`;
 
@@ -45,8 +45,8 @@ const AptitudePlatform = () => {
           activeTopic={activeTopic}
           selectedCompany={selectedCompany}
           onSelectCompany={setSelectedCompany}
-          isMobileOpen={isSidebarOpen}
-          setIsMobileOpen={setIsSidebarOpen}
+          isMobileOpen={isMobileOpen}
+          setIsMobileOpen={setIsMobileOpen}
         />
 
         {/* Main Content Area */}

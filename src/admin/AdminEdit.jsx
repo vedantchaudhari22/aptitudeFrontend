@@ -11,7 +11,7 @@ const AdminEdit = () => {
   const [file, setFile] = useState(null);
   const [formData, setFormData] = useState(null);
 
-  const BASE_URL = "https://aptitude-new-backend.vercel.app";
+  const BASE_URL = "https://aptitude-test-backend.vercel.app";
 
   useEffect(() => {
     const fetchData = async () => {

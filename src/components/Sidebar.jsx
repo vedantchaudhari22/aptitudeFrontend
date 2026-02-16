@@ -83,14 +83,16 @@ const Sidebar = ({ onSelectTopic, activeTopic, isMobileOpen, setIsMobileOpen, se
         }
     };
 
+    console.log("Sidebar Rendered. isMobileOpen:", isMobileOpen); // DEBUG LOG
+
     return (
         <>
             {/* Mobile Overlay */}
             {isMobileOpen && (
-                <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[45] md:hidden" onClick={() => setIsMobileOpen(false)} />
+                <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[90] md:hidden" onClick={() => setIsMobileOpen(false)} />
             )}
 
-            <aside className={`fixed inset-y-0 left-0 z-[50] md:relative w-72 bg-white border-r border-slate-200 h-full overflow-y-auto flex-shrink-0 transition-all duration-300 flex flex-col ${isMobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
+            <aside className={`fixed inset-y-0 left-0 z-[100] md:relative w-72 bg-white border-r border-slate-200 h-full overflow-y-auto flex-shrink-0 transition-all duration-300 flex flex-col ${isMobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
 
                 <div className="md:hidden flex justify-end p-4">
                     <button onClick={() => setIsMobileOpen(false)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full"><X size={24} /></button>

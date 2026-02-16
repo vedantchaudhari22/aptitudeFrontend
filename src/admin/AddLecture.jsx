@@ -19,7 +19,8 @@ const AddLecture = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "https://aptitude-new-backend.vercel.app/api/learn",
+        // "https://aptitude-new-backend.vercel.app/api/learn",
+        "https://aptitude-test-backend.vercel.app//api/learn",
         formData
       );
 

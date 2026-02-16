@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const BASE_URL = "https://aptitude-new-backend.vercel.app";
+  const BASE_URL = "https://aptitude-test-backend.vercel.app";
 
   useEffect(() => {
     fetchData();

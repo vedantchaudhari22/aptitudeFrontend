@@ -12,50 +12,63 @@ import StudentDashboard from './components/StudentDashboard';
 import Learn from './pages/Learn';
 import AddLecture from './admin/AddLecture';
 
+import { useState } from 'react';
+// ... imports
+
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <Router>
-      <Navbar />
+      <Navbar onMenuClick={() => { console.log("Menu Clicked"); setIsSidebarOpen(!isSidebarOpen); }} />
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/platform" element={<AptitudePlatform />} />
+        <Route
+          path="/platform"
+          element={
+            <AptitudePlatform
+              isMobileOpen={isSidebarOpen}
+              setIsMobileOpen={setIsSidebarOpen}
+            />
+          }
+        />
         <Route path="/question/:id" element={<QuestionDetail />} />
 
         {/* //admin Routes */}
         <Route
           path="/admin"
           element={
-           
-              <AdminDashboard />
-           
+
+            <AdminDashboard />
+
           }
         />
 
         <Route
           path="/admin/add"
           element={
-            
-              <AdminUpload />
-           
+
+            <AdminUpload />
+
           }
         />
 
         <Route
           path="/admin/edit/:id"
           element={
-           
-              <AdminEdit />
-           
+
+            <AdminEdit />
+
           }
         />
 
         <Route
           path="/admin/add-lecture"
           element={
-        
-              <AddLecture />
-            
+
+            <AddLecture />
+
           } />
 
         {/* //student dashboard route */}

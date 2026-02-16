@@ -13,7 +13,7 @@ const QuestionDetail = () => {
     const [submitted, setSubmitted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(45);
 
-    const BASE_URL = "https://aptitude-new-backend.vercel.app";
+    const BASE_URL = "https://aptitude-test-backend.vercel.app";
 
     /* ---------------- FETCH ---------------- */
     useEffect(() => {

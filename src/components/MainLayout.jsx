@@ -9,13 +9,13 @@ const MainLayout = ({ children }) => {
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <Sidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
+        isMobileOpen={isSidebarOpen}
+        setIsMobileOpen={setIsSidebarOpen}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        <Navbar toggleSidebar={() => setIsSidebarOpen(prev => !prev)} />
+        <Navbar onMenuClick={() => setIsSidebarOpen(prev => !prev)} />
         <main className="flex-1 overflow-auto bg-slate-50">
           {children}
         </main>
