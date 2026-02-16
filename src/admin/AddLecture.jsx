@@ -29,7 +29,7 @@ const AddLecture = () => {
     } catch (err) {
       toast.error(
         "Failed to upload lecture: " +
-          (err.response?.data?.message || err.message)
+        (err.response?.data?.message || err.message)
       );
     }
   };
@@ -64,9 +64,10 @@ const AddLecture = () => {
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wide">
                 Topic Name
               </label>
-              <input
+              <textarea
                 required
-                className="w-full p-2 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-bold outline-none focus:border-slate-900 text-sm"
+                rows={1}
+                className="w-full p-2 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-bold outline-none focus:border-slate-900 resize-none text-sm"
                 value={formData.topic}
                 onChange={(e) =>
                   setFormData({ ...formData, topic: e.target.value })
@@ -97,9 +98,10 @@ const AddLecture = () => {
             <label className="text-[10px] font-black uppercase text-slate-400 tracking-wide">
               YouTube Video URL
             </label>
-            <input
+            <textarea
               required
-              className="w-full p-2 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-bold outline-none focus:border-slate-900 text-sm"
+              rows={2}
+              className="w-full p-2 bg-slate-50 rounded-xl border border-slate-200 text-slate-900 font-bold outline-none focus:border-slate-900 resize-none text-sm"
               value={formData.videoUrl}
               onChange={(e) =>
                 setFormData({ ...formData, videoUrl: e.target.value })
