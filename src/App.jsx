@@ -13,6 +13,9 @@ import Learn from './pages/Learn';
 import AddLecture from './admin/AddLecture';
 
 import { useState } from 'react';
+import AdminPdfUpload from './admin/AdminPdfUpload';
+import AdminPdfEdit from './admin/AdminPdfEdit';
+import MockPapers from './pages/MockPapers';
 // ... imports
 
 function App() {
@@ -34,6 +37,7 @@ function App() {
           }
         />
         <Route path="/question/:id" element={<QuestionDetail />} />
+        <Route path="/mock" element={<MockPapers />} />
 
         {/* //admin Routes */}
         <Route
@@ -70,6 +74,15 @@ function App() {
             <AddLecture />
 
           } />
+
+        <Route
+          path="/admin/upload-pdf"
+          element={<AdminPdfUpload />} />
+
+        <Route
+          path="/admin/edit-pdf/:id"
+          element={<AdminPdfEdit />} />
+
 
         {/* //student dashboard route */}
         <Route path="/dashboard" element={<StudentDashboard />} />

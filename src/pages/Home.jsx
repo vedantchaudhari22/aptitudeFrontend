@@ -22,11 +22,11 @@ const Home = () => {
       path: "/platform"
     },
     {
-      title: "Company Specific",
-      description: "Target top companies like TCS and Amazon.",
+      title: "Practice Company Specific Aptitude Papers",
+      description: "Target top companies like TCS and Deloitte.",
       icon: <Building2 size={32} />,
       colorClass: "bg-slate-100 text-slate-800",
-      path: "/platform"
+      path: "/mock"
     }
   ];
 

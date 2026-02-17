@@ -107,8 +107,7 @@ const AdminUpload = () => {
                         <textarea
                             placeholder="Enter question..."
                             rows={2}
-                            className="w-full mt-1 p-2 rounded-xl border border-black/20 bg-slate-50 font-semibold placeholder-slate-500 text-slate-900 resize-none"
-                            required
+                            
                             onChange={(e) =>
                                 setFormData({ ...formData, questionText: e.target.value })
                             }

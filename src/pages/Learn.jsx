@@ -5,143 +5,173 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const Learn = () => {
-    const navigate = useNavigate();
-    const [lectures, setLectures] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
-    // const BASE_URL = "http://localhost:5000";
-    const BASE_URL = "https://aptitude-test-backend.vercel.app";
+  const navigate = useNavigate();
+  const [lectures, setLectures] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    // 1. Fetch Lectures from Backend
-    useEffect(() => {
-        const fetchLectures = async () => {
-            try {
-                const res = await axios.get(`${BASE_URL}/api/learn`);
-                setLectures(res.data);
-            } catch (err) {
-                toast.error("Failed to load lectures from vault");
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchLectures();
-    }, []);
+  const BASE_URL = "https://aptitude-test-backend.vercel.app";
 
-    // 2. Filter logic for real-time search using API data
-    const filteredLectures = lectures.filter(v =>
-        v.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  /* ---------------- FETCH ---------------- */
+  useEffect(() => {
+    const fetchLectures = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/learn`);
+        setLectures(res.data);
+      } catch {
+        toast.error("Failed to load lectures");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLectures();
+  }, []);
 
-    return (
-        <div className="min-h-screen bg-slate-50 p-4 md:p-6 transition-colors duration-500">
-            <div className="max-w-7xl mx-auto">
+  /* ---------------- SEARCH ---------------- */
+  const filteredLectures = lectures.filter(v =>
+    v.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    v.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
-                    <div>
-                        <button
-                            onClick={() => navigate('/')}
-                            className="flex items-center gap-2 text-blue-600 font-black text-sm uppercase tracking-tighter mb-2 hover:-translate-x-1 transition-transform"
-                        >
-                            <ArrowLeft size={16} /> Back to Hub
-                        </button>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            Lecture <span className="text-slate-500">Vault</span>
-                        </h1>
-                        <p className="text-slate-500 font-medium mt-1">
-                            Curated video lectures for placement preparation mastery.
-                        </p>
-                    </div>
+  return (
+    <div className="min-h-screen bg-slate-50 p-3">
+      <div className="max-w-[1400px] mx-auto">
 
-                    {/* Search Bar */}
-                    <div className="relative group w-full md:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search concepts or topics..."
-                            className="w-full pl-11 pr-4 py-4 bg-white rounded-2xl border border-slate-200 text-slate-900 text-sm font-bold focus:ring-4 focus:ring-slate-200 outline-none transition-all shadow-sm"
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
+        {/* ================= HEADER ================= */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
 
-                {/* Video Table Container */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-40 gap-4">
-                            <Loader2 className="animate-spin text-slate-900" size={48} />
-                            <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Unlocking the Vault...</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-slate-50/50 border-b border-slate-100">
-                                        <th className="p-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Topic / Concept</th>
-                                        <th className="p-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Learning Summary</th>
-                                        <th className="p-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Duration</th>
-                                        <th className="p-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {filteredLectures.length > 0 ? filteredLectures.map((video) => (
-                                        <tr key={video._id} className="group hover:bg-slate-50 transition-all">
-                                            <td className="p-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 transition-transform group-hover:scale-110">
-                                                        <BookOpen size={22} />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-black text-slate-800 text-lg block">{video.topic}</span>
-                                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{video.category}</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="p-6">
-                                                <p className="text-sm text-slate-500 font-medium max-w-sm leading-relaxed">
-                                                    {video.description}
-                                                </p>
-                                            </td>
-                                            <td className="p-6 text-center text-sm font-black text-slate-400 tabular-nums">
-                                                {video.duration}
-                                            </td>
-                                            <td className="p-6 text-center">
-                                                <a
-                                                    href={video.videoUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-black text-white rounded-xl font-black text-xs transition-all hover:shadow-lg hover:shadow-slate-200 active:scale-95 shadow-md shadow-slate-200/50"
-                                                >
-                                                    <PlayCircle size={16} /> Watch Now
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    )) : (
-                                        <tr>
-                                            <td colSpan={4} className="py-0.6 text-center">
-                                                <div className="flex flex-col items-center gap-4 opacity-40">
-                                                    <BookOpen size={64} className="text-slate-300" />
-                                                    <p className="text-slate-900 font-black uppercase tracking-widest text-xs">No matching lectures found</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                    {/* Table Footer */}
-                    <div className="p-4 bg-slate-50 text-center">
-                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                            ZenCode Video Bank • Knowledge Base
-                        </p>
-                    </div>
-                </div>
-            </div>
+          <div>
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-blue-600 font-semibold text-sm mb-1"
+            >
+              <ArrowLeft size={16} /> Back to Hub
+            </button>
+
+            <h1 className="text-2xl font-black text-slate-900">
+              Lecture Vault
+            </h1>
+
+            <p className="text-sm text-slate-500">
+              Placement preparation video lectures
+            </p>
+          </div>
+
+          {/* SEARCH */}
+          <div className="relative w-full md:w-72">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              size={16}
+            />
+            <input
+              type="text"
+              placeholder="Search topics..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 rounded-lg border bg-white text-sm font-semibold text-slate-900 placeholder-slate-500 outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+
         </div>
-    );
+
+        {/* ================= TABLE ================= */}
+        <div className="bg-white rounded-2xl border border-slate-300 overflow-hidden">
+
+          {loading ? (
+            <div className="py-16 flex flex-col items-center gap-3">
+              <Loader2 className="animate-spin text-slate-900" size={30} />
+              <p className="text-xs font-bold text-slate-500">
+                Loading Lectures...
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+
+                {/* TABLE HEAD */}
+                <thead className="bg-slate-100 text-xs uppercase text-slate-600">
+                  <tr>
+                    <th className="p-3 text-left">Topic</th>
+                    <th className="p-3 text-left">Summary</th>
+                    <th className="p-3 text-center">Duration</th>
+                    <th className="p-3 text-center">Action</th>
+                  </tr>
+                </thead>
+
+                {/* TABLE BODY */}
+                <tbody className="divide-y">
+
+                  {filteredLectures.length > 0 ? (
+                    filteredLectures.map((video) => (
+                      <tr key={video._id} className="hover:bg-slate-50">
+
+                        {/* TOPIC */}
+                        <td className="p-3 align-middle">
+                          <div className="flex items-center gap-2 text-slate-900 font-semibold">
+                            <BookOpen size={18} />
+                            <div>
+                              <div>{video.topic}</div>
+                              <div className="text-[10px] font-bold text-slate-400 uppercase">
+                                {video.category}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* DESCRIPTION */}
+                        <td className="p-3 text-sm text-slate-600 align-middle">
+                          {video.description}
+                        </td>
+
+                        {/* DURATION */}
+                        <td className="p-3 text-center font-bold text-slate-700 align-middle">
+                          {video.duration}
+                        </td>
+
+                        {/* ACTION */}
+                        <td className="p-3 text-center align-middle">
+                          <a
+                            href={video.videoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-black transition"
+                          >
+                            <PlayCircle size={14} /> Watch
+                          </a>
+                        </td>
+
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-12 text-center">
+                        <div className="flex flex-col items-center gap-3 opacity-40">
+                          <BookOpen size={48} className="text-slate-300" />
+                          <p className="text-xs font-bold uppercase text-slate-700">
+                            No lectures found
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+
+                </tbody>
+              </table>
+            </div>
+          )}
+
+        </div>
+
+        {/* FOOTER */}
+        <div className="text-center mt-2">
+          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+            ZenCode Video Bank • Knowledge Base
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
 };
 
 export default Learn;
